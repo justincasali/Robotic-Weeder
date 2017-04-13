@@ -1,6 +1,7 @@
 #define PULSE_TIME 1000
 #include "fwa.h"
 
+// These values need to be reworked
 #define RX_Calibration   0x01
 #define RX_Halt          0x02
 #define RX_Recalibration 0x03
