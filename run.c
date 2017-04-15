@@ -26,6 +26,10 @@ int main() {
     int x_step[4], y_step[4];
     int x_pixel[4], y_pixel[4];
 
+    // state 4 variables
+    int dandNum, dandTot;
+    int x_coordinates[10], y_coordinates[10];
+
     while (1) {
         set_led(state);
         switch (state) {
@@ -89,10 +93,79 @@ int main() {
                 break;
 
             case 3:
-                break;
+		// Wait for dandelion detection signal from TK1
+		while(rx != RX_Halt) rx = uart_receive();
+		// Send Nav stop signal
 
+		// Tell TK1 that navigation has stopped
+		uart_transmit(TX_Location);
+		// Move to location state
+		state = 4;
+                break;
+		
+	    case 4:
+		// Receive dandelion coordinates
+		dandTot = uart_receive();
+		// Check to make sure that dandelions were actually detected
+		if(dandTot == 0)
+			state == 3;
+			break;
+		}
+		// Listen for dandelion coordinates
+		int i;
+		for(i = dandNum; i > 0; i = i-1){
+			read_coordinate(&x_coordinates[i],&y_coordinates[i]);
+		}
+		// Transition to positioning state once coordinates are received
+		dandNum = 1;
+		state == 5;
+		break;
+
+	    case 5:
+		// Position pseudocator to each coordinate
+		home();
+		// Translate coordinates to steps
+		step(x_coordinates[dandNum], y_coordinates[dandNum]);
+		// Request confirmation from TK1
+		uart_transmit(TX_Positioning);
+		// Transition to verification state
+		state = 6;
+		break;
+        
+            case 6:
+		// Light LED red
+		
+		// Wait for confirmation/denial
+		while(rx != RX_Recalibration || rx != RX_Pseudocation) rx = uart_receive();
+		// Recalibrate if position is denied
+		if(rx == RX_Recalibration){
+			state = 8;
+			break;
+		}
+		// Continue to pseudocation if location is correct
+		if(rx == RX_Pseudocation){
+			state = 7;
+			break;
+		}
+
+	    case 7:
+		// Pseudocate dandelion
+		//delay
+
+		// If no dandelions left, transition to roaming state
+		dandNum++;
+		if(dandNum > dandTot){
+			uart_transmit(TX_Roaming);
+			state = 3;
+			break;
+		}
+		// If dandelions remain, transition to positioning state
+		uart_transmite(TX_Positioning);
+		state = 5;
+		break;
         }
     }
 
     return 0;
 }
+
