@@ -6,6 +6,8 @@
 #define RX_Recalibration 0x03
 #define RX_Pseudocation  0x04
 
+#define COORD 0x10
+
 #define TX_Coordinate    0x01
 #define TX_Roaming       0x02
 #define TX_Location      0x03
@@ -70,7 +72,6 @@ int main() {
                     step(x_step[i], y_step[i]);
 
                     uart_transmit(TX_Coordinate);
-                    // TODO LOOK FOR COORDINATE DATA CONTROL BYTE
                     read_coordinate(&x_pixel[i], &y_pixel[i]);
 
                     x_scalar += x_step[i] / (float)(x_pixel[i]);
@@ -89,6 +90,8 @@ int main() {
                 break;
 
             case 3:
+                read_coordinate(&x, &y);
+                pixel_move(x, y);
                 break;
 
         }

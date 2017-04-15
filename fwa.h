@@ -209,8 +209,8 @@ unsigned char uart_receive() {
 }
 
 void read_coordinate(int* x, int* y) {
-    *x = (int)(uart_receive());
-    *x |= (int)(uart_receive()) << 8;
-    *y = (int)(uart_receive());
-    *y |= (int)(uart_receive()) << 8;
+    *x = (int)(uart_receive()) << 8;
+    *x |= (int)(uart_receive());
+    *y = (int)(uart_receive()) << 8;
+    *y |= (int)(uart_receive());
 }
