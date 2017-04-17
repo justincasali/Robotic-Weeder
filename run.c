@@ -158,8 +158,9 @@ int main() {
 
 	    case 7:
 		// Pseudocate dandelion
+		// Turn off red LED
 		//delay
-
+		// Light Green LED
 		// If no dandelions left, transition to roaming state
 		dandNum++;
 		if(dandNum > dandTot){
