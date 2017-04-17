@@ -67,11 +67,14 @@ int main() {
                 x_step[2] = x_max/4;     y_step[2] = 3*y_max/4;
                 x_step[3] = 3*x_max/4;   y_step[3] = 3*y_max/4;
 
+		// Light LED Red
+
                 // Move to locations, read coordinate data, & calculate scalar values
                 for (int i = 0; i < 4; i++) {
 
                     home();
                     step(x_step[i], y_step[i]);
+		    // Delay?
 
                     uart_transmit(TX_Coordinate);
                     // TODO LOOK FOR COORDINATE DATA CONTROL BYTE
@@ -87,6 +90,8 @@ int main() {
 
                 home();
 
+		// Turn off LED
+
                 // Move to roaming state
                 state = 3;
 
@@ -97,6 +102,7 @@ int main() {
 		while(rx != RX_Halt) rx = uart_receive();
 		// Send Nav stop signal
 
+		// Delay?
 		// Tell TK1 that navigation has stopped
 		uart_transmit(TX_Location);
 		// Move to location state
@@ -112,7 +118,6 @@ int main() {
 			break;
 		}
 		// Listen for dandelion coordinates
-		int i;
 		for(i = dandNum; i > 0; i = i-1){
 			read_coordinate(&x_coordinates[i],&y_coordinates[i]);
 		}
@@ -125,9 +130,9 @@ int main() {
 		// Position pseudocator to each coordinate
 		home();
 		// Translate coordinates to steps
+
+		// Position pseudocator
 		step(x_coordinates[dandNum], y_coordinates[dandNum]);
-		// Request confirmation from TK1
-		uart_transmit(TX_Positioning);
 		// Transition to verification state
 		state = 6;
 		break;
@@ -135,6 +140,9 @@ int main() {
             case 6:
 		// Light LED red
 		
+		// Request confirmation from TK1
+		uart_transmit(TX_Coordinate);
+
 		// Wait for confirmation/denial
 		while(rx != RX_Recalibration || rx != RX_Pseudocation) rx = uart_receive();
 		// Recalibrate if position is denied
@@ -160,7 +168,14 @@ int main() {
 			break;
 		}
 		// If dandelions remain, transition to positioning state
-		uart_transmite(TX_Positioning);
+		uart_transmit(TX_Positioning);
+		state = 5;
+		break;
+
+	    case 8:
+		// Recalibration State
+
+		uart_transmit(TX_Positioning);
 		state = 5;
 		break;
         }
