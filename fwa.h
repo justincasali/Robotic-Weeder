@@ -69,6 +69,8 @@ int y_loc;
 // steps/pixel
 float x_scalar;
 float y_scalar;
+float x_offset;
+float y_offset;
 
 void pin_init() {
 
@@ -184,11 +186,11 @@ void move(int x, int y) {
 }
 
 void pixel_step(int x, int y) {
-    step(x_scalar * x, y_scalar * y);
+    step(x_scalar * x + x_offset, y_scalar * y + y_offset);
 }
 
 void pixel_move(int x, int y) {
-    move(x_scalar * x, y_scalar * y);
+    move(x_scalar * x + x_offset, y_scalar * y + y_offset);
 }
 
 void uart_init() {
@@ -208,9 +210,17 @@ unsigned char uart_receive() {
     return UDR;
 }
 
+// MSB first, might need to change
 void read_coordinate(int* x, int* y) {
-    *x = (int)(uart_receive());
-    *x |= (int)(uart_receive()) << 8;
-    *y = (int)(uart_receive());
-    *y |= (int)(uart_receive()) << 8;
+    *x = (int)(uart_receive()) << 8;
+    *x |= (int)(uart_receive());
+    *y = (int)(uart_receive()) << 8;
+    *y |= (int)(uart_receive());
+}
+
+void send_coordinate(int x, int y) {
+    uart_transmit(x >> 8 & 0xff);
+    uart_transmit(x & 0xff);
+    uart_transmit(y >> 8 & 0xff);
+    uart_transmit(y & 0x0ff);
 }
