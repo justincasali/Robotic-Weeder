@@ -35,6 +35,7 @@ int main() {
         switch (state) {
 
             case 1:
+		home();
                 while (rx != RX_Calibration) rx = uart_receive();
                 state = 2;
                 break;
@@ -111,6 +112,7 @@ int main() {
 		
 	    case 4:
 		// Receive dandelion coordinates
+		while(rx != numReady) rx = uart_receive();
 		dandTot = uart_receive();
 		// Check to make sure that dandelions were actually detected
 		if(dandTot == 0)
@@ -119,6 +121,7 @@ int main() {
 		}
 		// Listen for dandelion coordinates
 		for(i = dandNum; i > 0; i = i-1){
+			while(rx != coordReady) rx = uart_receive();
 			read_coordinate(&x_coordinates[i],&y_coordinates[i]);
 		}
 		// Transition to positioning state once coordinates are received
