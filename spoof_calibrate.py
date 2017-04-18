@@ -24,10 +24,10 @@ wait_for_request()
 micro.write(c1)
 
 wait_for_request()
-micro.write(c1)
-
-wait_for_request()
 micro.write(c2)
 
 wait_for_request()
 micro.write(c3)
+
+wait_for_request()
+micro.write(c4)
