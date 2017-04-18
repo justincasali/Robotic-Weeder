@@ -217,3 +217,10 @@ void read_coordinate(int* x, int* y) {
     *y = (int)(uart_receive()) << 8;
     *y |= (int)(uart_receive());
 }
+
+void send_coordinate(int x, int y) {
+    uart_transmit(x >> 8 & 0xff);
+    uart_transmit(x & 0xff);
+    uart_transmit(y >> 8 & 0xff);
+    uart_transmit(y & 0x0ff);
+}

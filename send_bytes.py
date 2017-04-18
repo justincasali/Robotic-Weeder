@@ -13,3 +13,4 @@ byte_array = bytes(chain)
 micro.write(byte_array)
 
 print("array sent:", byte_array)
+micro.close()

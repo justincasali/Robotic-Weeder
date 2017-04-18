@@ -29,6 +29,8 @@ int main() {
     int x_max, y_max;
     int x_step[4], y_step[4];
     int x_pixel[4], y_pixel[4];
+    float x1, x2;
+    float y1, y2;
 
     while (1) {
         set_led(state);
@@ -86,14 +88,17 @@ int main() {
                 // Construct step locations
                 //x_step[0] = x_max/4;     y_step[0] = y_max/4;
                 //x_step[1] = 3*x_max/4;   y_step[1] = y_max/4;
-                //x_step[2] = x_max/4;     y_step[2] = 3*y_max/4;
-                //x_step[3] = 3*x_max/4;   y_step[3] = 3*y_max/4;
+                //x_step[2] = 3*x_max/4;   y_step[3] = 3*y_max/4;
+                //x_step[3] = x_max/4;     y_step[2] = 3*y_max/4;
 
                 // Construct step locations
                 x_step[0] = x_max/4;     y_step[0] = 3*y_max/8;
                 x_step[1] = 3*x_max/4;   y_step[1] = 3*y_max/8;
-                x_step[2] = x_max/4;     y_step[2] = 5*y_max/8;
-                x_step[3] = 3*x_max/4;   y_step[3] = 5*y_max/8;
+                x_step[2] = 3*x_max/4;   y_step[3] = 5*y_max/8;
+                x_step[3] = x_max/4;     y_step[2] = 5*y_max/8;
+
+                // Send constructed steps
+                //for (int i = 0; i < 4; i++) send_coordinate(x_step[i], y_step[i]);
 
                 // Move to locations and read coordinate data
                 for (int i = 0; i < 4; i++) {
@@ -104,19 +109,17 @@ int main() {
                 }
 
                 // Calculate scalar & offset values
-                x_scalar = (x_step[1] - x_step[0]) / (float)(x_pixel[1] - x_pixel[0])
-                         + (x_step[3] - x_step[2]) / (float)(x_pixel[3] - x_pixel[2]);
-                x_scalar /= 2;
+                x1 = (x_pixel[0] + x_pixel[3]) / 2.0;
+                x2 = (x_pixel[1] + x_pixel[2]) / 2.0;
 
-                for (int i = 0; i < 4; i++) x_offset = x_step[i] - x_scalar * x_pixel[i];
-                x_offset /= 4;
+                x_scalar = (x_step[1] - x_step[0]) / (x2 - x1);
+                x_offset = x_step[0] - x_scalar * x1;
 
-                y_scalar = (y_step[2] - y_step[0]) / (float)(y_pixel[2] - y_pixel[0])
-                         + (y_step[3] - y_step[1]) / (float)(y_pixel[3] - y_pixel[1]);
-                y_scalar /= 2;
+                y1 = (y_pixel[0] + y_pixel[1]) / 2.0;
+                y2 = (y_pixel[2] + y_pixel[3]) / 2.0;
 
-                for (int i = 0; i < 4; i++) y_offset = y_step[i] - y_scalar * y_pixel[i];
-                y_offset /= 4;
+                y_scalar = (y_step[2] - y_step[1]) / (y2 - y1);
+                y_offset = y_step[0] - y_scalar * y1;
 
                 // Return home
                 home();
