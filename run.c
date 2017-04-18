@@ -8,7 +8,8 @@
 #define RX_Recalibration 0x03
 #define RX_Pseudocation  0x04
 
-#define COORD 0x10
+#define RX_Num_Ready     0x05
+#define RX_Coord_Ready   0x06
 
 #define TX_Coordinate    0x01
 #define TX_Roaming       0x02
@@ -25,12 +26,18 @@ int main() {
     char rx = 0x00;
     int x, y;
 
+    char startup = 1;
+
     // state 2 variables
     int x_max, y_max;
     int x_step[4], y_step[4];
     int x_pixel[4], y_pixel[4];
     float x1, x2;
     float y1, y2;
+
+    // state 4 variables
+    int dand_num, dand_tot;
+    int x_coordinates[0x10], y_coordinates[0x10];
 
     while (1) {
         set_led(state);
@@ -62,7 +69,6 @@ int main() {
                 break;
 
             case 2:
-
                 // Clear scalar & offset values
                 x_scalar = 0;
                 y_scalar = 0;
@@ -124,15 +130,87 @@ int main() {
                 // Return home
                 home();
 
-                // Move to roaming state
-                state = 3;
-
+                // Move to roaming state / positioning state
+                state = startup ? 3 : 5;
+                startup = 0;
                 break;
 
             case 3:
-                read_coordinate(&x, &y);
+                // Wait for dandelion detection signal from TK1
+                while (rx != RX_Halt) rx = uart_receive();
+                // Send Nav stop signal
+                set_nav();
+                // Delay
+                _delay_ms(1000);
+                // Tell TK1 that navigation has stopped
+                uart_transmit(TX_Location);
+                // Move to location state
+                state = 4;
+                break;
+
+            case 4:
+                // Receive dandelion coordinates
+                while (rx != RX_Num_Ready) rx = uart_receive();
+                dand_tot = uart_receive();
+
+                // Check to make sure that dandelions were actually detected
+                if (dand_tot == 0) {
+                    state = 3;
+                    break;
+                }
+
+                // Listen for dandelion coordinates
+                for (int i = 0; i < dand_tot; i++) {
+                    while (rx != RX_Coord_Ready) rx = uart_receive();
+                    read_coordinate(&x_coordinates[i], &y_coordinates[i]);
+                }
+
+                // Transition to positioning state once coordinates are received
+                dand_num = 0;
+                state = 5;
+                break;
+
+            case 5:
+                // Position pseudocator
                 home();
-                pixel_step(x, y);
+                pixel_step(x_coordinates[dand_num], y_coordinates[dand_num]);
+
+                // Transition to verification state
+                state = 6;
+                break;
+
+            case 6:
+                // Request confirmation from TK1
+                uart_transmit(TX_Coordinate);
+
+                // Wait for confirmation/denial
+                while (rx != RX_Recalibration && rx != RX_Pseudocation) rx = uart_receive();
+
+                // Recalibrate if position is denied
+        		if (rx == RX_Recalibration) {
+        			state = 2;
+        			break;
+        		}
+        		// Continue to pseudocation if location is correct
+        		if (rx == RX_Pseudocation) {
+        			state = 7;
+        			break;
+        		}
+
+            case 7:
+                // Pseudocation
+                pseudocate();
+
+                // If no dandelions left, transition to roaming state
+                dand_num++;
+                if (dand_num >= dand_tot) {
+                    uart_transmit(TX_Roaming);
+                    clear_nav();
+                    state = 3;
+                }
+
+                // If dandelions remain, transition to positioning state
+                state = 5;
                 break;
 
         }

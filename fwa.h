@@ -108,6 +108,12 @@ void clear_nav() {
     PORTA &= ~(1 << NAV);
 }
 
+void pseudocate() {
+    PORTC |= (1 << LZR);
+    _delay_ms(2000);
+    PORTC &= ~(1 << LZR);
+}
+
 void step(int x, int y) {
 
     // Enable motors
