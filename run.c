@@ -54,6 +54,7 @@ int main() {
                 break;
 
             case 1:
+                home();
                 while (rx != RX_Calibration) rx = uart_receive();
                 state = 2;
                 break;
