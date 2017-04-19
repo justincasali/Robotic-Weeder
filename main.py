@@ -55,7 +55,7 @@ while True:
 
         for i in range(count):
             micro.write(TX_Coord_Ready)
-            micro.write(coord_to_bytes(x_list[i], y_list[i])
+            micro.write(coord_to_bytes(x_list[i], y_list[i]))
 
         dand = 0
         while (dand < count):
@@ -68,4 +68,3 @@ while True:
                 calibrate()
 
     sleep(3)
-
