@@ -96,16 +96,20 @@ void pin_init() {
 }
 
 void set_led(char input) {
-    PORTB &= ~0xf;
-    PORTB |= (input & 0xf);
+    //PORTB &= ~0xf;
+    //PORTB |= (input & 0xf);
+    PORTB &= ~0x7;
+    PORTB |= (input & 0x7);
 }
 
 void set_nav() {
-    PORTA |= (1 << NAV);
+    //PORTA |= (1 << NAV);
+    PORTB |= (1 << LED3);
 }
 
 void clear_nav() {
-    PORTA &= ~(1 << NAV);
+    //PORTA &= ~(1 << NAV);
+    PORTB &= ~(1 << LED3);
 }
 
 void pseudocate() {
