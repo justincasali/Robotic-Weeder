@@ -7,7 +7,6 @@
 #define RX_Halt          0x02
 #define RX_Recalibration 0x03
 #define RX_Pseudocation  0x04
-
 #define RX_Num_Ready     0x05
 #define RX_Coord_Ready   0x06
 
@@ -16,6 +15,7 @@
 #define TX_Location      0x03
 #define TX_Shutdown      0x04
 #define TX_Positioning   0x05
+#define TX_Confirmation  0x06
 
 int main() {
 
@@ -184,7 +184,7 @@ int main() {
 
             case 6:
                 // Request confirmation from TK1
-                uart_transmit(TX_Coordinate);
+                uart_transmit(TX_Confirmation);
 
                 // Wait for confirmation/denial
                 while (rx != RX_Recalibration && rx != RX_Pseudocation) rx = uart_receive();
