@@ -1,0 +1,8 @@
+Location: 198 312
+Sent: b'\x00\xc6\x018'
+Location: 493 311
+Sent: b'\x01\xed\x017'
+Location: 485 108
+Sent: b'\x01\xe5\x00l'
+Location: 194 127
+Sent: b'\x00\xc2\x00\x7f'

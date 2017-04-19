@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3
 import serial
 
 RX_COORD = 0x01

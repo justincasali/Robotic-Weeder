@@ -41,6 +41,8 @@ int main() {
 
     while (1) {
         set_led(state);
+        rx = 0;
+
         switch (state) {
 
             case 0:
@@ -162,6 +164,7 @@ int main() {
                 // Listen for dandelion coordinates
                 for (int i = 0; i < dand_tot; i++) {
                     while (rx != RX_Coord_Ready) rx = uart_receive();
+                    rx = 0;
                     read_coordinate(&x_coordinates[i], &y_coordinates[i]);
                 }
 
@@ -187,15 +190,12 @@ int main() {
                 while (rx != RX_Recalibration && rx != RX_Pseudocation) rx = uart_receive();
 
                 // Recalibrate if position is denied
-        		if (rx == RX_Recalibration) {
-        			state = 2;
-        			break;
-        		}
+        		if (rx == RX_Recalibration) state = 2;
+
         		// Continue to pseudocation if location is correct
-        		if (rx == RX_Pseudocation) {
-        			state = 7;
-        			break;
-        		}
+        		if (rx == RX_Pseudocation) state = 7;
+
+                break;
 
             case 7:
                 // Pseudocation
@@ -204,9 +204,11 @@ int main() {
                 // If no dandelions left, transition to roaming state
                 dand_num++;
                 if (dand_num >= dand_tot) {
+                    home();
                     uart_transmit(TX_Roaming);
                     clear_nav();
                     state = 3;
+                    break;
                 }
 
                 // If dandelions remain, transition to positioning state
