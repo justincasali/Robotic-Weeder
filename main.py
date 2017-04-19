@@ -67,4 +67,4 @@ while True:
             else:
                 calibrate()
 
-    sleep(1)
+    sleep(3)
