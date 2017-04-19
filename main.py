@@ -57,14 +57,15 @@ while True:
             micro.write(TX_Coord_Ready)
             micro.write(coord_to_bytes(x_list[i], y_list[i])
 
-        dandelion = 0
-
-        while (dandelion < count):
+        dand = 0
+        while (dand < count):
             wait_for_request(RX_Confirmation)
-            if verify(x_list[dandelion], y_list[dandelion]):
+
+            if verify(x_list[dand], y_list[dand]):
                 micro.write(TX_Pseudocation)
-                dandelion = dandelion + 1
+                dand = dand + 1
             else:
                 calibrate()
 
     sleep(3)
+
