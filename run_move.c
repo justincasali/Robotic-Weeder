@@ -111,8 +111,7 @@ int main() {
 
                 // Move to locations and read coordinate data
                 for (int i = 0; i < 4; i++) {
-                    home();
-                    step(x_step[i], y_step[i]);
+                    move(x_step[i], y_step[i]);
                     uart_transmit(TX_Coordinate);
                     read_coordinate(&x_pixel[i], &y_pixel[i]);
                 }
@@ -178,8 +177,7 @@ int main() {
 
             case 5:
                 // Position pseudocator
-                home();
-                pixel_step(x_coordinates[dand_num], y_coordinates[dand_num]);
+                pixel_move(x_coordinates[dand_num], y_coordinates[dand_num]);
 
                 // Transition to verification state
                 state = 6;

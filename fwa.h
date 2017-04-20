@@ -187,6 +187,7 @@ void home() {
     step(-OOB_STEPS, -OOB_STEPS);
     x_loc = 0;
     y_loc = 0;
+    //_delay_ms(PULSE_TIME);
 }
 
 void move(int x, int y) {
