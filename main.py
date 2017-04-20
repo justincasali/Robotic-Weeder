@@ -65,6 +65,7 @@ while True:
                 micro.write(TX_Pseudocation)
                 dand = dand + 1
             else:
+                micro.write(TX_Recalibration)
                 calibrate()
 
     sleep(3)
