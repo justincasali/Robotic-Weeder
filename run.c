@@ -138,6 +138,8 @@ int main() {
                 break;
 
             case 3:
+                // Clear Nav stop signal
+                clear_nav();
                 // Wait for dandelion detection signal from TK1
                 while (rx != RX_Halt) rx = uart_receive();
                 // Send Nav stop signal
@@ -206,7 +208,6 @@ int main() {
                 if (dand_num >= dand_tot) {
                     home();
                     uart_transmit(TX_Roaming);
-                    clear_nav();
                     state = 3;
                     break;
                 }
