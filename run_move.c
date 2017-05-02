@@ -28,6 +28,8 @@ int main() {
     int x, y;
 
     char startup = 1;
+    char recal = 1;
+    char pseudo = 1;
 
     // state 2 variables
     int x_max, y_max;
@@ -191,16 +193,23 @@ int main() {
                 while (rx != RX_Recalibration && rx != RX_Pseudocation) rx = uart_receive();
 
                 // Recalibrate if position is denied
-        		if (rx == RX_Recalibration) state = 2;
+        		if (rx == RX_Recalibration) {
+                    state = (recal) ? 2 : 7;
+                    pseudo = (recal) ? 1 : 0;
+                    recal = (recal) ? 0 : 1;
+                }
 
         		// Continue to pseudocation if location is correct
-        		if (rx == RX_Pseudocation) state = 7;
+        		if (rx == RX_Pseudocation) {
+                    state = 7;
+                    pseudo = 1;
+                }
 
                 break;
 
             case 7:
                 // Pseudocation
-                pseudocate();
+                if (pseudo) pseudocate();
 
                 // If no dandelions left, transition to roaming state
                 dand_num++;
